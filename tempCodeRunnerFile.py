@@ -1,0 +1,2 @@
+
+    answers = session.get('answers', [])

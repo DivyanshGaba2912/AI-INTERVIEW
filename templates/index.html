@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onend = function() {
+                console.log('Speech synthesis finished.');
+            };
+            utterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event.error);
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function startListening(callback) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true; // Get interim results
+            recognition.continuous = true; // Keep listening continuously
+
+            let finalTranscript = ''; // Variable to store the complete transcript
+
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                callback(finalTranscript + interimTranscript); // Append interim results to final transcript
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+            };
+
+            recognition.onend = function() {
+                console.log('Speech recognition service disconnected');
+            };
+
+            recognition.start(); // Start the recognition
+            return recognition; // Return the recognition instance for stopping later
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('DOM fully loaded and parsed. Greeting user...');
+            // Greet the user on page load
+            speakText("Hello, welcome to the Mock Interview Chatbot. Please start by providing the job description.");
+
+            const startJobButton = document.getElementById("start-voice-input-job");
+            const stopJobButton = document.getElementById("stop-voice-input-job");
+            const jobDescriptionTextarea = document.getElementById("job_description");
+
+            const startProfileButton = document.getElementById("start-voice-input-profile");
+            const stopProfileButton = document.getElementById("stop-voice-input-profile");
+            const candidateProfileTextarea = document.getElementById("candidate_profile");
+
+            let jobRecognition;
+            let profileRecognition;
+
+            startJobButton.addEventListener("click", function() {
+                // Check for permission and start listening for job description
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(function() {
+                            speakText("Please start speaking the job description.");
+                            jobRecognition = startListening(function(transcript) {
+                                jobDescriptionTextarea.value = transcript; // Append to existing text
+                            });
+                        })
+                        .catch(function(err) {
+                            console.error('Error accessing the microphone:', err);
+                            speakText("Error accessing the microphone. Please check your permissions.");
+                        });
+                } else {
+                    speakText("Microphone access is not supported in this browser.");
+                }
+            });
+
+            stopJobButton.addEventListener("click", function() {
+                if (jobRecognition) {
+                    jobRecognition.stop(); // Manually stop the recognition
+                    speakText("Voice input for job description stopped. You can now submit the form or record the candidate profile.");
+                } else {
+                    speakText("No voice input is currently active.");
+                }
+            });
+
+            startProfileButton.addEventListener("click", function() {
+                // Check for permission and start listening for candidate profile
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(function() {
+                            speakText("Please start speaking the candidate profile.");
+                            profileRecognition = startListening(function(transcript) {
+                                candidateProfileTextarea.value = transcript; // Append to existing text
+                            });
+                        })
+                        .catch(function(err) {
+                            console.error('Error accessing the microphone:', err);
+                            speakText("Error accessing the microphone. Please check your permissions.");
+                        });
+                } else {
+                    speakText("Microphone access is not supported in this browser.");
+                }
+            });
+
+            stopProfileButton.addEventListener("click", function() {
+                if (profileRecognition) {
+                    profileRecognition.stop(); // Manually stop the recognition
+                    speakText("Voice input for candidate profile stopped. You can now submit the form.");
+                } else {
+                    speakText("No voice input is currently active.");
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Mock Interview Chatbot</h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="job_description">Job Description:</label>
+                <textarea id="job_description" name="job_description" rows="6" placeholder="Your job description will appear here..."></textarea>
+                <button type="button" id="start-voice-input-job" class="btn">Start Voice Input</button>
+                <button type="button" id="stop-voice-input-job" class="btn">Stop Voice Input</button>
+            </div>
+            <div class="form-group">
+                <label for="candidate_profile">Candidate Profile:</label>
+                <textarea id="candidate_profile" name="candidate_profile" rows="6" placeholder="Your candidate profile will appear here..."></textarea>
+                <button type="button" id="start-voice-input-profile" class="btn">Start Voice Input</button>
+                <button type="button" id="stop-voice-input-profile" class="btn">Stop Voice Input</button>
+            </div>
+            <button type="submit" class="btn">Start Interview</button>
+        </form>
+    </div>
+</body>
+</html>

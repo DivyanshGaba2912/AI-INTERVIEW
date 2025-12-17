@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onend = function() {
+                // Optional: Add any actions to be performed after speech ends
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function startListening(callback) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.continuous = true;
+
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript + ' ';
+                }
+                callback(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+            };
+
+            recognition.onend = function() {
+                console.log('Speech recognition service disconnected');
+            };
+
+            recognition.start();
+            return recognition;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const startInterviewButton = document.getElementById("start-interview");
+
+            // Function to speak the greeting
+            function greetUser() {
+                speakText("Welcome to the Mock Interview App. Click the button below to start.");
+            }
+
+            // Greet the user on page load
+            greetUser();
+
+            startInterviewButton.addEventListener("click", function() {
+                window.location.href = "{{ url_for('home') }}";
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Mock Interview App</h1>
+        <p>Click the button below to start the interview.</p>
+        <button id="start-interview" class="btn">Start Interview</button>
+    </div>
+</body>
+</html>

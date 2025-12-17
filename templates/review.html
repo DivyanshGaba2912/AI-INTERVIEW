@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview Review</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container" role="main">
+        <h1>Your Interview Review</h1>
+
+        {% for i in range(0, answers|length) %}
+        <div class="review-item">
+            <h3 class="review-heading">Question {{ i + 1 }}</h3>
+            <p><span class="review-label">Q:</span> {{ questions[i] }}</p>
+            <p><span class="review-label">Your Answer:</span> {{ answers[i] }}</p>
+            <p><span class="review-label">Feedback:</span> {{ reviews[i] }}</p>
+        </div>
+        {% endfor %}
+
+        <a href="{{ url_for('home') }}" class="link back-home" role="link">Back to Home</a>
+    </div>
+</body>
+</html>

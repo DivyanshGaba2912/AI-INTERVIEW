@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Interview</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function speakText(text, callback) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.onend = function() {
+                if (callback) callback();
+            };
+            utterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event.error);
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+    
+        function startListening(callback) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true;
+            recognition.continuous = true;
+    
+            let finalTranscript = '';
+            let isSpeaking = false;
+    
+            recognition.onresult = function(event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                        isSpeaking = true;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                        isSpeaking = false;
+                    }
+                }
+                callback(finalTranscript + interimTranscript, isSpeaking);
+            };
+    
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+            };
+    
+            recognition.onend = function() {
+                console.log('Speech recognition service disconnected');
+            };
+    
+            recognition.start();
+            return recognition;
+        }
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('DOM fully loaded and parsed. Greeting user...');
+            speakText("Please start speaking your answer after the question.");
+    
+            const timerElement = document.getElementById("timer");
+            const listeningStatusElement = document.getElementById("listening-status");
+            const thinkingTimerElement = document.getElementById("thinking-timer");
+            const answerTextarea = document.getElementById("answer");
+            const form = document.querySelector("form");
+            const timeoutInput = document.getElementById("timeout-input");
+    
+            let answerRecognition;
+            let thinkingIntervalId;
+    
+            function startThinkingTimer(duration, display) {
+                let timer = duration, seconds;
+                thinkingIntervalId = setInterval(function () {
+                    seconds = parseInt(timer % 60, 10);
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    display.textContent = "Time to think: " + seconds + "s";
+    
+                    if (--timer < 0) {
+                        clearInterval(thinkingIntervalId);
+                        display.textContent = "Time's up!";
+                        timeoutInput.value = "true";
+                        form.submit();
+                    }
+                }, 1000);
+            }
+    
+            function resetThinkingTimer() {
+                clearInterval(thinkingIntervalId);
+                thinkingTimerElement.style.display = 'block';
+                startThinkingTimer(10, thinkingTimerElement);
+            }
+    
+            function handleSpeakingStatus(speaking) {
+                if (speaking) {
+                    timerElement.style.display = 'none'; // Hide 30s timer
+                    listeningStatusElement.style.display = 'none'; // Hide Listening text
+                    thinkingTimerElement.style.display = 'block'; // Show 10s timer
+                    resetThinkingTimer();
+                } else {
+                    timerElement.style.display = 'none'; // Hide 30s timer
+                    thinkingTimerElement.style.display = 'none'; // Hide 10s timer
+                    listeningStatusElement.style.display = 'block'; // Show Listening text
+                    listeningStatusElement.textContent = "Listening...";
+                }
+            }
+    
+            speakText(document.getElementById("question-text").innerText, function() {
+                timerElement.style.display = 'block';
+                startThinkingTimer(30, timerElement);
+    
+                answerRecognition = startListening(function(transcript, speaking) {
+                    answerTextarea.value = transcript;
+                    handleSpeakingStatus(speaking);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container" role="main">
+        <h1>Interview Question</h1>
+        <p id="question-text" class="question">{{ question }}</p>
+        <div id="timer"></div>
+        <div id="thinking-timer"></div>
+        <div id="listening-status"></div>
+        <form method="post">
+            <input type="hidden" id="timeout-input" name="timeout" value="false">
+            <div class="form-group">
+                <label for="answer">Your Answer:</label>
+                <textarea id="answer" name="answer" rows="6" readonly aria-label="Your answer"></textarea>
+            </div>
+        </form>
+        <a href="{{ url_for('home') }}" class="link" role="link">Back to Home</a>
+    </div>
+</body>
+</html>

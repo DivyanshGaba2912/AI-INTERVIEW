@@ -1,0 +1,145 @@
+/* styles.css */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.btn {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.question-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.question {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+#timer {
+    display: none;
+    font-size: 24px;
+    color: #007bff;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#listening-status {
+    font-size: 18px;
+    font-weight: bold;
+    color: green;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+}
+#thinking-timer {
+    display: none;
+    font-size: 24px;
+    color: orange;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+.review-item {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.review-heading {
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.review-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.back-home {
+    display: block;
+    margin-top: 30px;
+    text-align: center;
+    color: #007bff;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.back-home:hover {
+    text-decoration: underline;
+}
