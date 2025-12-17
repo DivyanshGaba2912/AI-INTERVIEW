@@ -31,7 +31,6 @@ This project is designed to help users practice interviews in a realistic and st
 
 ## Project Structure
 
-```text
 MAIN_PART_4/
 │
 ├── app.py                  # Main Flask application
@@ -52,26 +51,22 @@ MAIN_PART_4/
 ### Steps
 
 #### 1. Clone the repository
-```bash
+
 git clone <repository-url>
 cd MAIN_PART_4
 
 #### 2. Create and activate a virtual environment
-```bash
 python -m venv venv
 venv\Scripts\activate     # Windows
 # source venv/bin/activate  # Linux / macOS
 
 #### 3. Install dependencies
-```bash
 pip install -r requirements.txt
 
 #### 4. Run the application
-```bash
 python app.py
 
 #### 5. Open the application in your browser
-```bash
 http://127.0.0.1:5000/
 
 ---
